@@ -41,12 +41,39 @@ followersArray.forEach( (person) => {
       const parent = document.querySelector('.cards');
       const card = profileCreator(response.data);
       parent.appendChild(card);
+      const followers = card.followers_url;
+      return followers;
+    })
+    .then(response => {
+        response.data.forEach( (follower) => {
+          followersToProfile(follower.login);
+        })
     })
     .catch(err => {
       console.log('Something went wrong!', err);
     })
 })
 
+const followersToProfile = (followerURL) => {
+  axios.get(followerURL)
+    .then(response => {
+      const parent = document.querySelector('.cards');
+      response.data.forEach( (profile) => {
+        let login = profile.login;
+        axios.get('https://api.github.com/users/' + login)
+          .then(response => {
+            let prof = profileCreator(response.data);
+            parent.append(prof);
+          })
+          .catch(err => {
+            console.log('Something went wrong with add a follow to the list', err);
+          })
+      })
+    })
+    .catch(err => {
+      console.log('Something went wrong with the initial followertoProfile request', err);
+    })
+}
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
 
