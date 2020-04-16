@@ -33,21 +33,25 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [ 'mbrady4', 'tetondan', 'dustinmyers',         'justsml', 'luishrd', 'bigknell'];
+const followersArray = [ 'mbrady4', 'tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
 
 followersArray.forEach( (person) => {
-  axios.get('https://api.github.com/users/' + person)
+  axios.get({
+    method:"get",
+    url:"https://api.github.com/users/" + person,
+    headers
     .then(response => {
       const parent = document.querySelector('.cards');
       const card = profileCreator(response.data);
       parent.appendChild(card);
-      const followers = card.followers_url;
+      const followers = response.data.followers_url;
       return followers;
     })
-    .then(response => {
-        response.data.forEach( (follower) => {
-          followersToProfile(follower.login);
-        })
+    .then(newFollowers => {
+        followersToProfile(newFollowers);
+        // response.forEach( (follower) => {
+        //   followersToProfile(follower.login);
+        // })
     })
     .catch(err => {
       console.log('Something went wrong!', err);
